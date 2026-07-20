@@ -19,9 +19,7 @@ const authors = [
     name: "Andrea Hirata",
     country: "Indonesia"
   }
-  
 ];
-
 
 const books = [
   {
@@ -52,19 +50,30 @@ const books = [
     year: 2005,
     available: true
   }
+  
 ];
 
-// Tambahkan .slice(0, 2) sebelum .forEach
-authors.slice(0, 2).forEach(author => {
-  // 1. Cetak nama penulis
-  console.log(author.name);
-  console.log(""); 
-  
-  // 2. Hitung jumlah buku
-  const jumlahBuku = books.filter(b => b.authorId === author.id).length;
-  console.log(`Jumlah Buku : ${jumlahBuku}`);
-  
-  console.log(""); 
-  console.log("-----------------------");
-  console.log(""); 
+
+console.log("\n=== TASK 9: VALIDASI RELASI DATA ===");
+
+// Menambahkan data buku invalid (tanpa author yang sesuai)
+books.push({
+  id: 5,
+  title: "Unknown Book",
+  authorId: 99,
+  year: 2024,
+  available: true
+});
+
+books.forEach(book => {
+  const author = authors.find(a => a.id === book.authorId);
+
+  console.log(book.title);
+  if (!author) {
+    console.log("ERROR");
+    console.log("Author tidak ditemukan.");
+  } else {
+    console.log(`Penulis: ${author.name}`);
+  }
+  console.log("-----------------------------------");
 });
