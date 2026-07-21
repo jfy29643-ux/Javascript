@@ -1,0 +1,33 @@
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+div {
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 5px 8px;
+  border: 1px solid #767676;
+  border-radius: 2px;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+ul.data-buku {
+  padding-left: 20px;
+}
+
+ul.data-buku li {
+  margin-bottom: 8px;
+}
+
