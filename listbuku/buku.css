@@ -31,3 +31,22 @@ ul.data-buku li {
   margin-bottom: 8px;
 }
 
+.btn-edit {
+  margin-left: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+  background-color: #ffc107;
+  border: 1px solid #cca000;
+  border-radius: 3px;
+}
+
+.btn-hapus {
+  margin-left: 5px;
+  padding: 2px 6px;
+  font-size: 12px;
+  background-color: #dc3545;
+  color: white;
+  border: 1px solid #b21f2d;
+  border-radius: 3px;
+}
+
