@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Katalog Utama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+        <h1 class="text-2xl font-bold text-center mb-6">📚 Katalog Semua Data</h1>
+        
+        <!-- Navigasi -->
+        <div class="flex justify-center gap-2 mb-6">
+            <a href="/" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-sm">Tampilkan Semua</a>
+            <a href="/books" class="bg-sky-600 text-white px-4 py-1.5 rounded-lg text-sm">Daftar Buku</a>
+            <a href="/authors" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm">Daftar Penulis</a>
+        </div>
+
+        <div class="space-y-3">
+            <% books.forEach(book => { %>
+                <div class="p-4 border rounded-lg bg-gray-50 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-lg"><%= book.title %></h3>
+                        <p class="text-sm text-gray-600">Penulis: <%= book.authorName %></p>
+                        <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">Genre: <%= book.genre %></span>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+</html>
