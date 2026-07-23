@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tambah Buku Baru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-10">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
+        <h1 class="text-xl font-bold mb-4 text-gray-800">➕ Tambah Buku Baru</h1>
+
+        <form action="/books/add" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Judul Buku</label>
+                <input type="text" name="title" required class="w-full border px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Genre</label>
+                <input type="text" name="genre" placeholder="Contoh: Novel, Komik" required class="w-full border px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Penulis</label>
+                <select name="authorId" required class="w-full border px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <option value="" disabled selected>Pilih Penulis</option>
+                    <% authors.forEach(author => { %>
+                        <option value="<%= author.id %>"><%= author.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <a href="/books" class="bg-gray-300 text-gray-800 text-xs px-4 py-2 rounded-lg font-semibold">Batal</a>
+                <button type="submit" class="bg-sky-600 text-white text-xs px-4 py-2 rounded-lg font-semibold">Simpan Buku</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,79 +1,107 @@
+const path = require('path');
 const express = require('express');
 const app = express();
 const PORT = 3000;
 
-// Middleware agar server bisa membaca format JSON
+// Konfigurasi EJS & Folder Views
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middleware Form Data & JSON
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// --- DATA UTAMA ---
-const authors = [
-  { id: 1, name: "Robert C. Martin", country: "USA" },
-  { id: 2, name: "James Clear", country: "USA" },
-  { id: 3, name: "Marijn Haverbeke", country: "Netherlands" },
-  { id: 4, name: "Andrea Hirata", country: "Indonesia" }
+// Data Dummy
+let books = [
+    { id: 1, title: "Laskar Pelangi", authorId: 1, genre: "Novel" },
+    { id: 2, title: "Bumi Manusia", authorId: 2, genre: "Sejarah" }
 ];
 
-const books = [
-  { id: 1, title: "Clean Code", authorId: 1, year: 2008, available: true },
-  { id: 2, title: "Atomic Habits", authorId: 2, year: 2018, available: false },
-  { id: 3, title: "Eloquent JavaScript", authorId: 3, year: 2019, available: true },
-  { id: 4, title: "Laskar Pelangi", authorId: 4, year: 2005, available: true }
+let authors = [
+    { id: 1, name: "Andrea Hirata" },
+    { id: 2, name: "Pramoedya Ananta Toer" }
 ];
 
-// --- ENDPOINT API ---
+// Helper Function: Gabung Buku & Penulis
+function getFormattedBooks() {
+    return books.map(book => {
+        const author = authors.find(a => a.id === book.authorId);
+        return {
+            ...book,
+            authorName: author ? author.name : 'Tidak Diketahui'
+        };
+    });
+}
 
-// 1. Root Endpoint (Pesan Selamat Datang)
+// =========================================================
+// ROUTE FRONTEND (Masing-masing panggil file EJS tersendiri)
+// =========================================================
+
+// 1. Halaman Utama: Tampilkan Semua Data
 app.get('/', (req, res) => {
-  res.json({ message: "Selamat datang di API Perpustakaan!" });
+    res.render('index', { books: getFormattedBooks() });
 });
 
-// 2. Mendapatkan semua data Penulis (Authors)
-app.get('/api/authors', (req, res) => {
-  res.status(200).json(authors);
+// 2. Halaman Khusus Buku
+app.get('/books', (req, res) => {
+    res.render('books-list', { books: getFormattedBooks() });
 });
 
-// 3. Mendapatkan semua data Buku (Books)
-app.get('/api/books', (req, res) => {
-  res.status(200).json(books);
+// 3. Halaman Khusus Penulis
+app.get('/authors', (req, res) => {
+    res.render('authors', { authors: authors });
 });
 
-// 4. Mendapatkan detail satu buku berdasarkan ID
-app.get('/api/books/:id', (req, res) => {
-  const bookId = parseInt(req.params.id);
-  const book = books.find(b => b.id === bookId);
-
-  if (!book) {
-    return res.status(404).json({ message: "Buku tidak ditemukan!" });
-  }
-
-  // Menggabungkan data buku dengan data penulisnya
-  const author = authors.find(a => a.id === book.authorId);
-  res.status(200).json({
-    ...book,
-    author: author ? author.name : "Unknown"
-  });
+// 4. Halaman Form Tambah Buku
+app.get('/books/add', (req, res) => {
+    res.render('tambah', { authors: authors });
 });
 
-// 5. Menambahkan buku baru
-app.post('/api/books', (req, res) => {
-  const { title, authorId, year, available } = req.body;
-
-  const newBook = {
-    id: books.length + 1,
-    title,
-    authorId,
-    year,
-    available: available ?? true
-  };
-
-  books.push(newBook);
-  res.status(201).json({
-    message: "Buku berhasil ditambahkan!",
-    data: newBook
-  });
+// Proses Tambah Buku (POST)
+app.post('/books/add', (req, res) => {
+    const { title, genre, authorId } = req.body;
+    const newBook = {
+        id: books.length ? books[books.length - 1].id + 1 : 1,
+        title,
+        genre: genre || 'Umum',
+        authorId: parseInt(authorId)
+    };
+    books.push(newBook);
+    res.redirect('/books');
 });
 
-// Menjalankan Server
-app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+// 5. Halaman Form Edit Buku
+app.get('/books/edit/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    const bookToEdit = books.find(b => b.id === bookId);
+    if (!bookToEdit) return res.redirect('/books');
+
+    res.render('edit', { book: bookToEdit, authors: authors });
 });
+
+// Proses Update Buku (POST)
+app.post('/books/update/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    const { title, genre, authorId } = req.body;
+    
+    const bookIndex = books.findIndex(b => b.id === bookId);
+    if (bookIndex !== -1) {
+        books[bookIndex] = {
+            id: bookId,
+            title,
+            genre,
+            authorId: parseInt(authorId)
+        };
+    }
+    res.redirect('/books');
+});
+
+// 6. Proses Hapus Buku
+app.get('/books/delete/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    books = books.filter(b => b.id !== bookId);
+    res.redirect('/books');
+});
+
+// Jalankan Server
+app.listen(PORT, () => console.log(`Server running: http://localhost:3000`));
