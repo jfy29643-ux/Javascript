@@ -12,25 +12,56 @@
             <a href="/books/add" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">➕ Tambah Buku</a>
         </div>
 
-        <!-- Navigasi -->
         <div class="flex gap-2 mb-6">
             <a href="/" class="text-sm text-gray-600 hover:underline">← Kembali ke Beranda</a>
         </div>
 
-        <div class="space-y-3">
-            <% books.forEach(book => { %>
-                <div class="p-4 border border-sky-100 rounded-lg bg-sky-50/30 flex justify-between items-center">
-                    <div>
-                        <h3 class="font-bold text-lg"><%= book.title %></h3>
-                        <span class="inline-block mt-1 text-xs bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-medium">Genre: <%= book.genre %></span>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="/books/edit/<%= book.id %>" class="bg-amber-400 text-xs px-3 py-1.5 rounded font-bold text-amber-950">Edit</a>
-                        <a href="/books/delete/<%= book.id %>" onclick="return confirm('Hapus buku ini?')" class="bg-red-500 text-xs px-3 py-1.5 rounded font-bold text-white">Hapus</a>
-                    </div>
-                </div>
-            <% }) %>
+        <div id="books-container" class="space-y-3">
+            <p class="text-gray-400 text-sm italic">Memuat data buku...</p>
         </div>
     </div>
+
+    <script>
+        // Mengambil data buku dari API
+        fetch('/api/books')
+            .then(res => res.json())
+            .then(books => {
+                const container = document.getElementById('books-container');
+                container.innerHTML = ''; // Bersihkan teks loading
+
+                if (books.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-gray-500">Belum ada data buku.</p>';
+                    return;
+                }
+
+                // Render data dengan HTML & Style persis kepunyaanmu
+                books.forEach(book => {
+                    container.innerHTML += `
+                        <div class="p-4 border border-sky-100 rounded-lg bg-sky-50/30 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-lg">${book.title}</h3>
+                                <span class="inline-block mt-1 text-xs bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-medium">Genre: ${book.genre || '-'}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="/books/edit/${book.id}" class="bg-amber-400 text-xs px-3 py-1.5 rounded font-bold text-amber-950">Edit</a>
+                                <button onclick="deleteBook(${book.id})" class="bg-red-500 text-xs px-3 py-1.5 rounded font-bold text-white">Hapus</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('books-container').innerHTML = 
+                    '<p class="text-sm text-red-500">Gagal mengambil data dari API.</p>';
+            });
+
+        // Fungsi Hapus menggunakan API DELETE
+        async function deleteBook(id) {
+            if (!confirm('Hapus buku ini?')) return;
+            const res = await fetch(`/api/books/${id}`, { method: 'DELETE' });
+            if (res.ok) window.location.reload();
+        }
+    </script>
 </body>
 </html>
