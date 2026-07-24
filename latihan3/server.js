@@ -34,25 +34,54 @@ function getFormattedBooks() {
 }
 
 // =========================================================
-// ROUTE FRONTEND (Masing-masing panggil file EJS tersendiri)
+// 1. ENDPOINT REST API (DIPANGGIL OLEH FETCH JAVASCRIPT)
 // =========================================================
 
-// 1. Halaman Utama: Tampilkan Semua Data
+// API Ambil Semua Buku (Termasuk Nama Penulis)
+app.get('/api/books', (req, res) => {
+    res.json(getFormattedBooks());
+});
+
+// API Ambil Semua Penulis
+app.get('/api/authors', (req, res) => {
+    res.json(authors);
+});
+
+// API Hapus Buku via HTTP DELETE
+app.delete('/api/books/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    books = books.filter(b => b.id !== bookId);
+    res.json({ message: "Buku berhasil dihapus" });
+});
+
+// API Hapus Penulis via HTTP DELETE
+app.delete('/api/authors/:id', (req, res) => {
+    const authorId = parseInt(req.params.id);
+    authors = authors.filter(a => a.id !== authorId);
+    res.json({ message: "Penulis berhasil dihapus" });
+});
+
+
+// =========================================================
+// 2. ROUTE FRONTEND (Hanya merender halaman HTML/EJS)
+// =========================================================
+
+// Halaman Utama
 app.get('/', (req, res) => {
-    res.render('index', { books: getFormattedBooks() });
+    res.render('index'); // Tidak perlu kirim data books lagi karena diambil via fetch API
 });
 
-// 2. Halaman Khusus Buku
+// Halaman Khusus Buku
 app.get('/books', (req, res) => {
-    res.render('books-list', { books: getFormattedBooks() });
+    res.render('books-list'); // Jika file EJS Anda bernama books-list.ejs atau books.ejs
 });
 
-// 3. Halaman Khusus Penulis
+// Halaman Khusus Penulis
 app.get('/authors', (req, res) => {
-    res.render('authors', { authors: authors });
+    res.render('authors');
 });
 
-// 4. Halaman Form Tambah Buku
+// Halaman Form Tambah Buku
 app.get('/books/add', (req, res) => {
     res.render('tambah', { authors: authors });
 });
@@ -70,7 +99,7 @@ app.post('/books/add', (req, res) => {
     res.redirect('/books');
 });
 
-// 5. Halaman Form Edit Buku
+// Halaman Form Edit Buku
 app.get('/books/edit/:id', (req, res) => {
     const bookId = parseInt(req.params.id);
     const bookToEdit = books.find(b => b.id === bookId);
@@ -96,7 +125,7 @@ app.post('/books/update/:id', (req, res) => {
     res.redirect('/books');
 });
 
-// 6. Proses Hapus Buku
+// Proses Hapus Buku via GET (Fallback)
 app.get('/books/delete/:id', (req, res) => {
     const bookId = parseInt(req.params.id);
     books = books.filter(b => b.id !== bookId);
